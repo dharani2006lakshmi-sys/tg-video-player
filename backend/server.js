@@ -103,7 +103,7 @@ if (!SESSION_STRING) {
     }, 2500);
   });
 
-  app.listen(PORT, () => console.log(\`Web Login Server running on port \${PORT}\`));
+  app.listen(PORT, () => console.log(`Web Login Server running on port ${PORT}`));
 
 } else {
 
@@ -128,7 +128,7 @@ if (!SESSION_STRING) {
       size /= 1024;
       i++;
     }
-    return \`\${size.toFixed(1)} \${units[i]}\`;
+    return `${size.toFixed(1)} ${units[i]}`;
   }
 
   client.connect().then(() => {
@@ -141,7 +141,7 @@ if (!SESSION_STRING) {
       let isVideo = false;
       let mimeType = 'video/mp4';
       let duration = null;
-      let fileName = \`video_\${Date.now()}.mp4\`;
+      let fileName = `video_${Date.now()}.mp4`;
       let fileSize = msg.media.document ? Number(msg.media.document.size) : 0;
       
       if (msg.media.document) {
@@ -178,7 +178,7 @@ if (!SESSION_STRING) {
       videos.unshift(entry);
       
       try {
-        await client.sendMessage(msg.peerId, { message: \`Added "\${entry.fileName}" (\${entry.sizeLabel}) to your player ✅\`, replyTo: msg.id });
+        await client.sendMessage(msg.peerId, { message: `Added "${entry.fileName}" (${entry.sizeLabel}) to your player ✅`, replyTo: msg.id });
       } catch (e) {
         console.log("Could not reply:", e.message);
       }
@@ -197,8 +197,8 @@ if (!SESSION_STRING) {
       mimeType: v.mimeType,
       tooLarge: v.tooLarge,
       addedAt: v.addedAt,
-      thumbUrl: \`/api/thumb/\${v.id}\`,
-      streamUrl: \`/api/stream/\${v.id}\`,
+      thumbUrl: `/api/thumb/${v.id}`,
+      streamUrl: `/api/stream/${v.id}`,
     })));
   });
 
@@ -238,7 +238,7 @@ if (!SESSION_STRING) {
       const chunkSize = end - start + 1;
 
       res.status(range ? 206 : 200);
-      res.setHeader('Content-Range', \`bytes \${start}-\${end}/\${v.fileSize}\`);
+      res.setHeader('Content-Range', `bytes ${start}-${end}/${v.fileSize}`);
       res.setHeader('Accept-Ranges', 'bytes');
       res.setHeader('Content-Length', chunkSize);
       res.setHeader('Content-Type', v.mimeType || 'video/mp4');
@@ -290,5 +290,5 @@ if (!SESSION_STRING) {
   app.get('/', (req, res) => res.json({ status: 'ok', message: 'Telegram MTProto backend is running.' }));
   app.get('/health', (req, res) => res.json({ ok: true }));
 
-  app.listen(PORT, () => console.log(\`Server listening on port \${PORT}\`));
+  app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
 }
