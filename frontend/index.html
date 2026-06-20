@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Reel — Telegram Video Player</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="grain"></div>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">●</span>
+    <span class="brand-name">REEL</span>
+  </div>
+  <div class="status" id="connStatus">
+    <span class="status-dot" id="statusDot"></span>
+    <span id="statusText">connecting</span>
+  </div>
+</header>
+
+<main class="layout">
+
+  <!-- Player Stage -->
+  <section class="stage">
+    <div class="stage-frame" id="stageFrame">
+      <div class="empty-state" id="emptyState">
+        <div class="empty-num">00</div>
+        <p>No reel loaded</p>
+        <span>Send a video to your Telegram bot, then pick it from the log →</span>
+      </div>
+
+      <video id="video" playsinline></video>
+
+      <div class="too-large-banner" id="tooLargeBanner" hidden>
+        <span>⚠</span>
+        <div>
+          <strong id="tooLargeName"></strong>
+          <p>This file is over Telegram's 20MB bot-download limit and can't be streamed yet.</p>
+        </div>
+      </div>
+
+      <div class="controls" id="controls">
+        <div class="scrub-row">
+          <span class="time" id="timeCurrent">0:00</span>
+          <div class="scrub-track" id="scrubTrack">
+            <div class="scrub-buffered" id="scrubBuffered"></div>
+            <div class="scrub-fill" id="scrubFill"></div>
+            <div class="scrub-handle" id="scrubHandle"></div>
+          </div>
+          <span class="time" id="timeDuration">0:00</span>
+        </div>
+
+        <div class="controls-row">
+          <div class="controls-left">
+            <button class="ctrl-btn" id="playBtn" title="Play/Pause (k)" aria-label="Play or pause">
+              <svg id="iconPlay" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              <svg id="iconPause" viewBox="0 0 24 24" hidden><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>
+            </button>
+            <button class="ctrl-btn" id="rewindBtn" title="Back 10s (j)" aria-label="Rewind 10 seconds">
+              <svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+            </button>
+            <button class="ctrl-btn" id="forwardBtn" title="Forward 10s (l)" aria-label="Forward 10 seconds">
+              <svg viewBox="0 0 24 24"><path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/></svg>
+            </button>
+
+            <div class="vol-group">
+              <button class="ctrl-btn" id="muteBtn" title="Mute (m)" aria-label="Mute">
+                <svg id="iconVolHigh" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                <svg id="iconVolMute" viewBox="0 0 24 24" hidden><path d="M16.5 12A4.5 4.5 0 0 0 14 7.97v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51A8.796 8.796 0 0 0 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3 3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06a8.99 8.99 0 0 0 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4 9.91 6.09 12 8.18V4z"/></svg>
+              </button>
+              <div class="vol-track" id="volTrack">
+                <div class="vol-fill" id="volFill"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="controls-right">
+            <span class="now-playing" id="nowPlaying"></span>
+
+            <div class="menu-wrap">
+              <button class="ctrl-btn ctrl-text" id="speedBtn" title="Playback speed">1x</button>
+              <div class="menu" id="speedMenu">
+                <button data-speed="0.5">0.5x</button>
+                <button data-speed="0.75">0.75x</button>
+                <button data-speed="1" class="active">1x</button>
+                <button data-speed="1.25">1.25x</button>
+                <button data-speed="1.5">1.5x</button>
+                <button data-speed="2">2x</button>
+              </div>
+            </div>
+
+            <button class="ctrl-btn" id="pipBtn" title="Picture in picture">
+              <svg viewBox="0 0 24 24"><path d="M19 7H9c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm0 8H9V9h10v6zM3 7H1v12c0 1.1.9 2 2 2h14v-2H3V7z" fill="none" stroke="currentColor" stroke-width="0.4"/><path d="M19 13h-6v4h6v-4z"/><path d="M21 5H3c-1.1 0-2 .9-2 2v10h2V7h18v10h-4v2h4c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2z"/></svg>
+            </button>
+
+            <button class="ctrl-btn" id="fullscreenBtn" title="Fullscreen (f)">
+              <svg id="iconExpand" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+              <svg id="iconCompress" viewBox="0 0 24 24" hidden><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="meta-row" id="metaRow" hidden>
+      <h1 id="metaTitle"></h1>
+      <div class="meta-tags">
+        <span id="metaSize" class="tag"></span>
+        <span id="metaDuration" class="tag"></span>
+        <span id="metaAdded" class="tag"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reel Log (video list) -->
+  <aside class="log">
+    <div class="log-header">
+      <h2>Reel Log</h2>
+      <button class="refresh-btn" id="refreshBtn" title="Refresh list">
+        <svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+      </button>
+    </div>
+
+    <div class="log-list" id="logList">
+      <div class="log-skeleton">
+        <div class="sk-line w-80"></div>
+        <div class="sk-line w-60"></div>
+        <div class="sk-line w-90"></div>
+      </div>
+    </div>
+
+    <div class="log-footer">
+      <p>Connected bot delivers new videos here automatically. Tap refresh if a new send doesn't appear.</p>
+    </div>
+  </aside>
+
+</main>
+
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
