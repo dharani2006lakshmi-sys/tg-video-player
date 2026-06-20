@@ -3,14 +3,16 @@ const { TelegramClient } = require('telegram');
 const { StringSession } = require('telegram/sessions');
 const input = require('input'); // npm install input
 
-const apiId = parseInt(process.env.API_ID);
-const apiHash = process.env.API_HASH;
 const stringSession = new StringSession(''); // create a new session
 
 (async () => {
+  let apiId = parseInt(process.env.API_ID);
+  let apiHash = process.env.API_HASH;
+
   if (!apiId || !apiHash) {
-    console.error("Please set API_ID and API_HASH in your .env file or environment variables.");
-    process.exit(1);
+    console.log("We need your API credentials from my.telegram.org");
+    apiId = parseInt(await input.text('Please enter your API_ID: '));
+    apiHash = await input.text('Please enter your API_HASH: ');
   }
 
   console.log('Loading interactive example...');
